@@ -66,11 +66,13 @@ public class WordBreak_LC_139 {
     }
 
     /*
-     * TC: O(n^2)
+     * TC: O(n^2) + O(Ns)
+     * N = n words in the dictionary
+     * s = average length of each word
      * SC: O(2n)
      */
     public boolean wordBreak_memoize(String s, List<String> wordDict) {
-        Set<String> dict = new HashSet<>(wordDict);
+        Set<String> dict = new HashSet<>(wordDict); // O(Ns)
         int n = s.length();
         int[] dp = new int[n];
         Arrays.fill(dp, -1);
@@ -101,11 +103,13 @@ public class WordBreak_LC_139 {
     }
 
     /*
-     * TC: O(n^2)
+     * TC: O(n^2) + O(Ns)
+     * N = n words in the dictionary
+     * s = average length of each word
      * SC: O(n)
      */
     public boolean wordBreak_tabulate(String s, List<String> wordDict) {
-        Set<String> dict = new HashSet<>(wordDict);
+        Set<String> dict = new HashSet<>(wordDict); // O(Ns)
         int n = s.length();
         int[] dp = new int[n + 1];
         dp[n] = 1;
