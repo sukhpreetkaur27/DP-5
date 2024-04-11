@@ -25,9 +25,20 @@
  */
 
 /*
+ * Eg:
+ s = "coalerat"
+
+ wordDict = ["a","at","ale","bat","c","co","cat","coal","coale","fat","l","le","rat"]
+
+ output:
+ List<List<String>> splitWords = [[co, a, le, rat], [co, ale, rat], [coale, rat]]
+ */
+
+/*
  * Repeated sub-problems -> apply DP (memoize)
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -129,5 +140,109 @@ public class WordBreak_LC_139 {
         }
 
         return dp[0] == 1 ? true : false;
+    }
+
+    /*
+     * TC: O(n^2) + O(Ns)
+     * N = n words in the dictionary
+     * s = average length of each word
+     * SC: O(n)
+     */
+    public List<String> wordBreak_onePath(String s, List<String> wordDict) {
+        Set<String> dict = new HashSet<>(wordDict); // O(Ns)
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        int[] lengths = new int[n];
+        dp[n] = 1;
+
+        for (int startIndex = n - 1; startIndex >= 0; startIndex--) {
+            int isPossible = 0;
+            for (int index = startIndex; index < s.length(); index++) {
+                String subString = s.substring(startIndex, index + 1);
+                if (dict.contains(subString)) {
+                    if (dp[index + 1] == 1) {
+                        lengths[startIndex] = index - startIndex + 1;
+                        isPossible = 1;
+                        break;
+                    }
+                }
+            }
+            dp[startIndex] = isPossible;
+        }
+
+        List<String> splitWords = new ArrayList<>();
+
+        if (dp[0] != 1) {
+            return splitWords;
+        }
+
+        for (int i = 0; i < n; i += lengths[i]) {
+            String split = s.substring(i, i + lengths[i]);
+            splitWords.add(split);
+        }
+
+        return splitWords;
+    }
+
+    /*
+     * TC: O(n^2) + O(Ns)
+     * N = n words in the dictionary
+     * s = average length of each word
+     * SC: O(n)
+     */
+    public List<List<String>> wordBreak_allPaths(String s, List<String> wordDict) {
+        Set<String> dict = new HashSet<>(wordDict); // O(Ns)
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        List<Integer>[] lengths = new ArrayList[n];
+        dp[n] = 1;
+
+        for (int startIndex = n - 1; startIndex >= 0; startIndex--) {
+            int isPossible = 0;
+            for (int index = startIndex, i = 0; index < s.length(); index++) {
+                String subString = s.substring(startIndex, index + 1);
+                if (dict.contains(subString)) {
+                    if (dp[index + 1] == 1) {
+
+                        if (lengths[startIndex] == null) {
+                            lengths[startIndex] = new ArrayList<>();
+                        }
+                        lengths[startIndex].add(index - startIndex + 1);
+                        isPossible = 1;
+                    }
+                }
+            }
+            dp[startIndex] = isPossible;
+        }
+
+        List<List<String>> splitWords = new ArrayList<>();
+
+        if (dp[0] != 1) {
+            return splitWords;
+        }
+
+        findSplits(splitWords, lengths, 0, new ArrayList<>(), s);
+
+        return splitWords;
+    }
+
+    private void findSplits(List<List<String>> splitWords, List<Integer>[] lengths, int index, List<String> curr,
+            String s) {
+        int n = lengths.length;
+        // base
+        if (index == n) {
+            splitWords.add(new ArrayList<>(curr));
+            return;
+        }
+        int currSize = curr.size();
+        // logic
+        for (int length : lengths[index]) {
+            // action
+            String split = s.substring(index, index + length);
+            curr.add(split);
+            findSplits(splitWords, lengths, index + length, curr, s);
+            // backtrack
+            curr.remove(currSize);
+        }
     }
 }
