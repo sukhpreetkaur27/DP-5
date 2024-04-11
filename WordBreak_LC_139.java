@@ -21,6 +21,8 @@
  * 
  * TC: exponential: O(n^n)
  * SC: O(n)
+ * 
+ * NOTE: we can store the dictionary words in a Trie to save on space.
  * Check NOTES for tree structure
  */
 
